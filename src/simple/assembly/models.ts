@@ -7,15 +7,17 @@ import { PersistentVector } from "near-sdk-as";
  * @property nodel - model of vehicle
  * @property color - color of vehicle
  * @property registrant - accountId of registrant
+ * @property blockIndex - blockIndex of registration
  */
 @nearBindgen
 export class Registration {
   constructor(
-    public type: "car" | "motorcyle" | "boat",
+    public type: string,
     public make: string,
     public model: string,
     public color: string,
-    public registrant: string
+    public registrant: string,
+    public blockIndex: u64
   ) {}
 }
 
@@ -38,14 +40,14 @@ export class Registrant {
     public accountId: string,
     public firstName: string,
     public lastName: string,
-    public houseNumber: u32,
+    public houseNumber: string,
     public street: string,
     public city: string,
     public postalCode: string,
-    public telNumber: u64,
+    public telNumber: string,
     public email: string,
     public registrations: PersistentVector<string> = new PersistentVector<string>(
-      accountId
+      "registrantsRegistrations_" + accountId
     )
   ) {}
 }
