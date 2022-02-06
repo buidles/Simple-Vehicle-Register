@@ -46,8 +46,6 @@ export class Registrant {
     public postalCode: string,
     public telNumber: string,
     public email: string,
-    public registrations: PersistentVector<string> = new PersistentVector<string>(
-      "registrantsRegistrations_" + accountId
-    )
+    public registrations: string[]
   ) {}
 }
