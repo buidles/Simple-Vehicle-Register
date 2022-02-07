@@ -47,6 +47,48 @@ export function createRegistrant(
   registrants.set(accountId, registrant);
 }
 
+// Only registrant can update their own data
+export function updateRegistrant(
+  firstName: string,
+  lastName: string,
+  houseNumber: string,
+  street: string,
+  city: string,
+  postalCode: string,
+  telNumber: string,
+  email: string
+): bool {
+  const accountId = context.sender;
+  const registrant = registrants.get(accountId);
+
+  if (!registrant) {
+    return false;
+  }
+
+  const registrations = new Array<string>();
+
+  for (let i = 0; i < registrant.registrations.length; ++i) {
+    registrations.push(registrant.registrations[i]);
+  }
+
+  const updatedRegistrant = new Registrant(
+    accountId,
+    firstName,
+    lastName,
+    houseNumber,
+    street,
+    city,
+    postalCode,
+    telNumber,
+    email,
+    registrations
+  );
+
+  registrants.set(accountId, updatedRegistrant);
+
+  return true;
+}
+
 // Create a registration
 export function createRegistration(
   licenceNumber: string,
@@ -98,6 +140,39 @@ export function createRegistration(
   registrant.registrations = registrantsRegistrations;
 
   registrants.set(context.sender, registrant);
+
+  return true;
+}
+
+// Only the registration's registrant can update the registration
+export function updateRegistration(
+  licenceNumber: string,
+  type: string,
+  make: string,
+  model: string,
+  color: string
+): bool {
+  const registration = registrations.get(licenceNumber);
+
+  if (!registration) {
+    return false;
+  }
+
+  assert(
+    context.sender == registration.registrant,
+    "Only the registration's registrant can update the registration."
+  );
+
+  const updatedRegistration = new Registration(
+    type,
+    make,
+    model,
+    color,
+    context.sender,
+    registration.blockIndex
+  );
+
+  registrations.set(licenceNumber, updatedRegistration);
 
   return true;
 }
