@@ -89,6 +89,40 @@ export function updateRegistrant(
   return true;
 }
 
+// Only registrant can delete themselves
+// Will also delete registrant's registrations
+export function deleteRegistrant(): bool {
+  assert(
+    storage.hasKey("registrants::" + context.sender),
+    "Registrant does not exist"
+  );
+
+  const registrant = registrants.get(context.sender);
+  const registrantsRegistrations = new Array<string>();
+
+  if (!registrant) {
+    return false;
+  }
+
+  for (let i = 0; i < registrant.registrations.length; ++i) {
+    registrantsRegistrations.push(registrant.registrations[i]);
+  }
+
+  registrants.delete(context.sender);
+
+  for (let i = 0; i < registrant.registrations.length; ++i) {
+    if (registrant.registrations[i]) {
+      registrations.delete(registrant.registrations[i]);
+    } else {
+      logging.log(
+        "Registration for " + registrant.registrations[i] + " does not exist"
+      );
+    }
+  }
+
+  return true;
+}
+
 // Create a registration
 export function createRegistration(
   licenceNumber: string,
@@ -173,6 +207,62 @@ export function updateRegistration(
   );
 
   registrations.set(licenceNumber, updatedRegistration);
+
+  return true;
+}
+
+export function deleteRegistration(licenceNumber: string): bool {
+  assert(
+    storage.hasKey("registrations::" + licenceNumber),
+    "Registration does not exist"
+  );
+
+  const registration = registrations.get(licenceNumber);
+
+  if (!registration) {
+    return false;
+  }
+
+  assert(
+    storage.hasKey("registrants::" + registration.registrant),
+    "Registrant does not exist"
+  );
+
+  const registrant = registrants.get(registration.registrant);
+
+  if (!registrant) {
+    return false;
+  }
+
+  assert(
+    registration.registrant == context.sender,
+    "Only the registered registrant can delete the registration."
+  );
+
+  registrations.delete(licenceNumber);
+
+  const registrantsRegistrations = new Array<string>();
+
+  for (let i = 0; i < registrant.registrations.length; ++i) {
+    if (registrant.registrations[i] != licenceNumber) {
+      registrantsRegistrations.push(registrant.registrations[i]);
+    }
+  }
+
+  const updatedRegistrant = new Registrant(
+    registrant.accountId,
+    registrant.firstName,
+    registrant.lastName,
+    registrant.houseNumber,
+    registrant.street,
+    registrant.city,
+    registrant.postalCode,
+    registrant.telNumber,
+    registrant.email,
+    registrantsRegistrations
+  );
+
+  registrants.set(registrant.accountId, updatedRegistrant);
 
   return true;
 }
