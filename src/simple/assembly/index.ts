@@ -1,10 +1,6 @@
-import {
-  storage,
-  context,
-  PersistentVector,
-  PersistentMap,
-  logging,
-} from "near-sdk-as";
+// TODO: add logging
+
+import { storage, context, PersistentMap, logging } from "near-sdk-as";
 import { Registration, Registrant } from "./models";
 
 const registrations = new PersistentMap<string, Registration>("registrations");
@@ -57,18 +53,17 @@ export function updateRegistrant(
   postalCode: string,
   telNumber: string,
   email: string
-): bool {
+): void {
   const accountId = context.sender;
   const registrant = registrants.get(accountId);
 
-  if (!registrant) {
-    return false;
-  }
+  assert(registrant, "Registrant " + accountId + "  does not exist.");
 
-  const registrations = new Array<string>();
+  const registrantsRegistrations = registrant!.registrations;
+  const registrantsRegistrationsCopy = new Array<string>();
 
-  for (let i = 0; i < registrant.registrations.length; ++i) {
-    registrations.push(registrant.registrations[i]);
+  for (let i = 0; i < registrantsRegistrations.length; ++i) {
+    registrantsRegistrationsCopy.push(registrantsRegistrations[i]);
   }
 
   const updatedRegistrant = new Registrant(
@@ -81,46 +76,36 @@ export function updateRegistrant(
     postalCode,
     telNumber,
     email,
-    registrations
+    registrantsRegistrationsCopy
   );
 
   registrants.set(accountId, updatedRegistrant);
-
-  return true;
 }
 
 // Only registrant can delete themselves
 // Will also delete registrant's registrations
-export function deleteRegistrant(): bool {
+export function deleteRegistrant(): void {
   assert(
     storage.hasKey("registrants::" + context.sender),
     "Registrant does not exist"
   );
 
   const registrant = registrants.get(context.sender);
-  const registrantsRegistrations = new Array<string>();
-
-  if (!registrant) {
-    return false;
-  }
-
-  for (let i = 0; i < registrant.registrations.length; ++i) {
-    registrantsRegistrations.push(registrant.registrations[i]);
-  }
+  const registrantsRegistrationsCopy = registrant!.registrations;
 
   registrants.delete(context.sender);
 
-  for (let i = 0; i < registrant.registrations.length; ++i) {
-    if (registrant.registrations[i]) {
-      registrations.delete(registrant.registrations[i]);
+  for (let i = 0; i < registrantsRegistrationsCopy.length; ++i) {
+    if (registrantsRegistrationsCopy[i]) {
+      registrations.delete(registrantsRegistrationsCopy[i]);
     } else {
       logging.log(
-        "Registration for " + registrant.registrations[i] + " does not exist"
+        "Registration for " +
+          registrantsRegistrationsCopy[i] +
+          " does not exist"
       );
     }
   }
-
-  return true;
 }
 
 // Create a registration
@@ -130,7 +115,7 @@ export function createRegistration(
   make: string,
   model: string,
   color: string
-): bool {
+): void {
   assert(
     !storage.hasKey("registrations::" + licenceNumber),
     "Registration already exists."
@@ -157,25 +142,17 @@ export function createRegistration(
 
   // Add to registrant's registrations
   const registrant = registrants.get(context.sender);
-  const registrantsRegistrations = new Array<string>();
-
-  if (!registrant) {
-    return false;
-  }
-
-  const registrantsCurrentRegistrations = registrant.registrations;
+  const registrantsUpdatedRegistrations = new Array<string>();
+  const registrantsCurrentRegistrations = registrant!.registrations;
 
   for (let i = 0; i < registrantsCurrentRegistrations.length; ++i) {
-    registrantsRegistrations.push(registrantsCurrentRegistrations[i]);
+    registrantsUpdatedRegistrations.push(registrantsCurrentRegistrations[i]);
   }
 
-  registrantsRegistrations.push(licenceNumber);
+  registrantsUpdatedRegistrations.push(licenceNumber);
 
-  registrant.registrations = registrantsRegistrations;
-
-  registrants.set(context.sender, registrant);
-
-  return true;
+  registrant!.registrations = registrantsUpdatedRegistrations;
+  registrants.set(context.sender, registrant!);
 }
 
 // Only the registration's registrant can update the registration
@@ -185,15 +162,16 @@ export function updateRegistration(
   make: string,
   model: string,
   color: string
-): bool {
+): void {
+  assert(
+    storage.hasKey("registrations::" + licenceNumber),
+    "Registration does not exist"
+  );
+
   const registration = registrations.get(licenceNumber);
 
-  if (!registration) {
-    return false;
-  }
-
   assert(
-    context.sender == registration.registrant,
+    context.sender == registration!.registrant,
     "Only the registration's registrant can update the registration."
   );
 
@@ -203,15 +181,13 @@ export function updateRegistration(
     model,
     color,
     context.sender,
-    registration.blockIndex
+    registration!.blockIndex
   );
 
   registrations.set(licenceNumber, updatedRegistration);
-
-  return true;
 }
 
-export function deleteRegistration(licenceNumber: string): bool {
+export function deleteRegistration(licenceNumber: string): void {
   assert(
     storage.hasKey("registrations::" + licenceNumber),
     "Registration does not exist"
@@ -219,52 +195,42 @@ export function deleteRegistration(licenceNumber: string): bool {
 
   const registration = registrations.get(licenceNumber);
 
-  if (!registration) {
-    return false;
-  }
-
   assert(
-    storage.hasKey("registrants::" + registration.registrant),
+    storage.hasKey("registrants::" + registration!.registrant),
     "Registrant does not exist"
   );
 
-  const registrant = registrants.get(registration.registrant);
-
-  if (!registrant) {
-    return false;
-  }
+  const registrant = registrants.get(registration!.registrant);
 
   assert(
-    registration.registrant == context.sender,
+    registration!.registrant == context.sender,
     "Only the registered registrant can delete the registration."
   );
 
   registrations.delete(licenceNumber);
 
-  const registrantsRegistrations = new Array<string>();
+  const registrantsUpdatedRegistrations = new Array<string>();
 
-  for (let i = 0; i < registrant.registrations.length; ++i) {
-    if (registrant.registrations[i] != licenceNumber) {
-      registrantsRegistrations.push(registrant.registrations[i]);
+  for (let i = 0; i < registrant!.registrations.length; ++i) {
+    if (registrant!.registrations[i] != licenceNumber) {
+      registrantsUpdatedRegistrations.push(registrant!.registrations[i]);
     }
   }
 
   const updatedRegistrant = new Registrant(
-    registrant.accountId,
-    registrant.firstName,
-    registrant.lastName,
-    registrant.houseNumber,
-    registrant.street,
-    registrant.city,
-    registrant.postalCode,
-    registrant.telNumber,
-    registrant.email,
-    registrantsRegistrations
+    registrant!.accountId,
+    registrant!.firstName,
+    registrant!.lastName,
+    registrant!.houseNumber,
+    registrant!.street,
+    registrant!.city,
+    registrant!.postalCode,
+    registrant!.telNumber,
+    registrant!.email,
+    registrantsUpdatedRegistrations
   );
 
-  registrants.set(registrant.accountId, updatedRegistrant);
-
-  return true;
+  registrants.set(registrant!.accountId, updatedRegistrant);
 }
 
 // Get a registrant's data
@@ -304,7 +270,7 @@ export function getRegistrantsRegistrations(accountId: string): Array<string> {
 export function transferRegistration(
   licenceNumber: string,
   toAccountId: string
-): bool {
+): void {
   assert(
     storage.hasKey("registrants::" + toAccountId),
     "Registrant " + toAccountId + " does not exist."
@@ -315,76 +281,48 @@ export function transferRegistration(
     "Registrant " + context.sender + " does not exist."
   );
 
+  assert(
+    storage.hasKey("registrations::" + licenceNumber),
+    "Registration does not exist."
+  );
+
   const registration = registrations.get(licenceNumber);
 
-  if (!registration) {
-    return false;
-  }
-
-  const fromRegistrant = registrants.get(registration.registrant);
+  const fromRegistrant = registrants.get(registration!.registrant);
   const toRegistrant = registrants.get(toAccountId);
-
-  if (!fromRegistrant || !toRegistrant) {
-    return false;
-  }
 
   // Update registration with new registrant
   assert(
-    registration.registrant == context.sender,
+    registration!.registrant == context.sender,
     "Only the current registrant can tranfer registration."
   );
 
-  registration.registrant = toAccountId;
-  registrations.set(licenceNumber, registration);
+  registration!.registrant = toAccountId;
+  registrations.set(licenceNumber, registration!);
 
   // Remove licence no. from current registrant's registrations
   const fromRegistrantsAmendedRegistrations = new Array<string>();
 
-  for (let i = 0; i < fromRegistrant.registrations.length; ++i) {
-    if (fromRegistrant.registrations[i] != licenceNumber) {
-      fromRegistrantsAmendedRegistrations.push(fromRegistrant.registrations[i]);
+  for (let i = 0; i < fromRegistrant!.registrations.length; ++i) {
+    if (fromRegistrant!.registrations[i] != licenceNumber) {
+      fromRegistrantsAmendedRegistrations.push(
+        fromRegistrant!.registrations[i]
+      );
     }
   }
 
-  fromRegistrant.registrations = fromRegistrantsAmendedRegistrations;
-  registrants.set(fromRegistrant.accountId, fromRegistrant);
+  fromRegistrant!.registrations = fromRegistrantsAmendedRegistrations;
+  registrants.set(fromRegistrant!.accountId, fromRegistrant!);
 
   // Add licence no. to new registrant's registrations
   const toRegistrantsAmendedRegistrations = new Array<string>();
 
-  for (let i = 0; i < toRegistrant.registrations.length; ++i) {
-    toRegistrantsAmendedRegistrations.push(toRegistrant.registrations[i]);
+  for (let i = 0; i < toRegistrant!.registrations.length; ++i) {
+    toRegistrantsAmendedRegistrations.push(toRegistrant!.registrations[i]);
   }
 
   toRegistrantsAmendedRegistrations.push(licenceNumber);
 
-  toRegistrant.registrations = toRegistrantsAmendedRegistrations;
-  registrants.set(toRegistrant.accountId, toRegistrant);
-
-  return true;
+  toRegistrant!.registrations = toRegistrantsAmendedRegistrations;
+  registrants.set(toRegistrant!.accountId, toRegistrant!);
 }
-
-// return the string 'hello world'
-// export function helloWorld(): string {
-//   return "hello world";
-// }
-
-// read the given key from account (contract) storage
-// export function read(key: string): string {
-//   if (storage.hasKey(key)) {
-//     return `✅ Key [ ${key} ] has value [ ${storage.getString(key)!} ]`
-//   } else {
-//     return `🚫 Key [ ${key} ] not found in storage. ( ${storageReport()} )`
-//   }
-// }
-
-// write the given value at the given key to account (contract) storage
-// export function write(key: string, value: string): string {
-//   storage.set(key, value)
-//   return `✅ Data saved. ( ${storageReport()} )`
-// }
-
-// private helper method used by read() and write() above
-// function storageReport(): string {
-//   return `storage [ ${Context.storageUsage} bytes ]`
-// }
