@@ -17,7 +17,7 @@ export function createRegistrant(
   postalCode: string,
   telNumber: string,
   email: string
-): void {
+): Registrant {
   const accountId = context.sender;
 
   assert(
@@ -41,6 +41,8 @@ export function createRegistrant(
   );
 
   registrants.set(accountId, registrant);
+
+  return registrant;
 }
 
 // Only registrant can update their own data
