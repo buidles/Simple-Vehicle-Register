@@ -271,17 +271,132 @@ describe("Contract", () => {
         'Registrant\'s registration "123-xyz" should not exist'
       );
     });
+  });
 
-    // it("should add the registration to the registrant's registrations", () => {
-    //   contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+  describe("getRegistrantData()", () => {
+    beforeEach(() => {
+      VMContext.setSigner_account_id("test_user");
 
-    //   const testRegistrant = contract.registrants.get("test_user");
+      contract.createRegistrant(
+        "John",
+        "Jones",
+        "123",
+        "High Street",
+        "London",
+        "SE1",
+        "123456789",
+        "test@test.com"
+      );
+    });
 
-    //   expect(testRegistrant!.registrations[0]).toBe(
-    //     "123-xyz",
-    //     "Registrant's registration does not exist"
-    //   );
-    // });
+    it("should get a registrant's data", () => {
+      const testRegistrant = contract.getRegistrantData("test_user");
+
+      expect(testRegistrant!.firstName).toBe("John", "firstName is incorrect");
+      expect(testRegistrant!.lastName).toBe("Jones", "lastName is incorrect");
+      expect(testRegistrant!.houseNumber).toBe(
+        "123",
+        "houseNumber is incorrect"
+      );
+      expect(testRegistrant!.street).toBe("High Street", "street is incorrect");
+      expect(testRegistrant!.city).toBe("London", "city is incorrect");
+      expect(testRegistrant!.postalCode).toBe("SE1", "postalCode is incorrect");
+      expect(testRegistrant!.telNumber).toBe(
+        "123456789",
+        "telNumber is incorrect"
+      );
+      expect(testRegistrant!.email).toBe("test@test.com", "email is incorrect");
+      expect(testRegistrant!.registrations).toHaveLength(
+        0,
+        "registrations is incorrect"
+      );
+    });
+  });
+
+  describe("getRegistrantsRegistrations()", () => {
+    beforeEach(() => {
+      VMContext.setSigner_account_id("test_user");
+
+      contract.createRegistrant(
+        "John",
+        "Jones",
+        "123",
+        "High Street",
+        "London",
+        "SE1",
+        "123456789",
+        "test@test.com"
+      );
+
+      contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+      contract.createRegistration(
+        "456-xyz",
+        "car",
+        "Tesla",
+        "Model 3",
+        "black"
+      );
+    });
+
+    it("should get a registrant's registratons", () => {
+      const testRegistrant = contract.getRegistrantData("test_user");
+
+      expect(testRegistrant!.registrations[0]).toBe(
+        "123-xyz",
+        'Registrant\'s registration "123-xyz" should exist'
+      );
+
+      expect(testRegistrant!.registrations[1]).toBe(
+        "456-xyz",
+        'Registrant\'s registration "456-xyz" should exist'
+      );
+    });
+  });
+
+  describe("transferRegistration()", () => {
+    beforeEach(() => {
+      VMContext.setSigner_account_id("test_user_1");
+
+      contract.createRegistrant(
+        "John",
+        "Jones",
+        "123",
+        "High Street",
+        "London",
+        "SE1",
+        "123456789",
+        "test@test.com"
+      );
+
+      VMContext.setSigner_account_id("test_user_2");
+
+      contract.createRegistrant(
+        "Jane",
+        "Smith",
+        "321",
+        "Low Street",
+        "Brighton",
+        "BN1",
+        "987654321",
+        "test1@test1.com"
+      );
+
+      VMContext.setSigner_account_id("test_user_1");
+
+      contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+
+      VMContext.setSigner_account_id("test_user_2");
+
+      contract.createRegistration(
+        "456-xyz",
+        "car",
+        "Tesla",
+        "Model 3",
+        "black"
+      );
+    });
+
+    it("should transfer a regisration from one registrant to another", () => {});
   });
 
   // // VIEW method tests
