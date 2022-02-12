@@ -3,8 +3,10 @@
 import { storage, context, PersistentMap, logging } from "near-sdk-as";
 import { Registration, Registrant } from "./models";
 
-const registrations = new PersistentMap<string, Registration>("registrations");
-const registrants = new PersistentMap<string, Registrant>("registrants");
+export const registrations = new PersistentMap<string, Registration>(
+  "registrations"
+);
+export const registrants = new PersistentMap<string, Registrant>("registrants");
 
 // Create a registrant
 // Must be created before creating registration
@@ -17,7 +19,7 @@ export function createRegistrant(
   postalCode: string,
   telNumber: string,
   email: string
-): Registrant {
+): void {
   const accountId = context.sender;
 
   assert(
@@ -41,8 +43,6 @@ export function createRegistrant(
   );
 
   registrants.set(accountId, registrant);
-
-  return registrant;
 }
 
 // Only registrant can update their own data
