@@ -148,7 +148,7 @@ describe("Contract", () => {
     });
 
     it("should delete a registrant", () => {
-      contract.registrants.delete("test_user");
+      contract.deleteRegistrant();
 
       const deletedRegistrant = contract.registrants.get("test_user");
 
@@ -156,10 +156,132 @@ describe("Contract", () => {
     });
 
     it("should delete any registrations belonging to the registrant", () => {
-      // contract.registrants.delete("test_user");
-      // const deletedRegistrant = contract.registrants.get("test_user");
-      // expect(deletedRegistrant).toBeNull("Registrant has not been deleted");
+      contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+      contract.createRegistration(
+        "456-xyz",
+        "car",
+        "Tesla",
+        "Model 3",
+        "black"
+      );
+
+      expect(contract.registrations.get("123-xyz")).toBeTruthy(
+        'Registration "123-xyz" exists'
+      );
+
+      expect(contract.registrations.get("456-xyz")).toBeTruthy(
+        'Registration "123-xyz" exists'
+      );
+
+      contract.deleteRegistrant();
+
+      expect(contract.registrations.get("123-xyz")).toBeFalsy(
+        'Registration "123-xyz" no longer exists'
+      );
+      expect(contract.registrations.get("456-xyz")).toBeFalsy(
+        'Registration "123-xyz" no longer exists'
+      );
     });
+  });
+
+  describe("createRegistration()", () => {
+    beforeEach(() => {
+      VMContext.setSigner_account_id("test_user");
+
+      contract.createRegistrant(
+        "John",
+        "Jones",
+        "123",
+        "High Street",
+        "London",
+        "SE1",
+        "123456789",
+        "test@test.com"
+      );
+
+      contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+    });
+
+    it("should create a new registration with the correct values", () => {
+      const createdRegistration = contract.registrations.get("123-xyz");
+
+      expect(createdRegistration!.type).toBe("car", "type is incorrect");
+      expect(createdRegistration!.make).toBe("Ford", "make is incorrect");
+      expect(createdRegistration!.model).toBe("F150", "model is incorrect");
+      expect(createdRegistration!.color).toBe("blue", "color is incorrect");
+      expect(createdRegistration!.registrant).toBe(
+        "test_user",
+        "registrant is incorrect"
+      );
+      expect(createdRegistration!.blockIndex).toBeTruthy(
+        "blockIndex does not exist"
+      );
+    });
+
+    it("should add the registration to the registrant's registrations", () => {
+      const testRegistrant = contract.registrants.get("test_user");
+
+      expect(testRegistrant!.registrations[0]).toBe(
+        "123-xyz",
+        "Registrant's registration does not exist"
+      );
+    });
+  });
+
+  describe("deleteRegistration()", () => {
+    beforeEach(() => {
+      VMContext.setSigner_account_id("test_user");
+
+      contract.createRegistrant(
+        "John",
+        "Jones",
+        "123",
+        "High Street",
+        "London",
+        "SE1",
+        "123456789",
+        "test@test.com"
+      );
+
+      contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+    });
+
+    it("should delete a registration", () => {
+      contract.deleteRegistration("123-xyz");
+
+      expect(contract.registrations.get("123-xyz")).toBeFalsy(
+        'Registration "123-xyz" should not exists'
+      );
+    });
+
+    it("should add delete the registration from the registrant's registrations", () => {
+      let testRegistrant = contract.registrants.get("test_user");
+
+      expect(testRegistrant!.registrations[0]).toBe(
+        "123-xyz",
+        'Registrant\'s registration "123-xyz" should exist'
+      );
+
+      contract.deleteRegistration("123-xyz");
+
+      testRegistrant = contract.registrants.get("test_user");
+
+      expect(testRegistrant!.registrations).toHaveLength(
+        0,
+        'Registrant\'s registration "123-xyz" should not exist'
+      );
+    });
+
+    // it("should add the registration to the registrant's registrations", () => {
+    //   contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+
+    //   const testRegistrant = contract.registrants.get("test_user");
+
+    //   expect(testRegistrant!.registrations[0]).toBe(
+    //     "123-xyz",
+    //     "Registrant's registration does not exist"
+    //   );
+    // });
   });
 
   // // VIEW method tests
