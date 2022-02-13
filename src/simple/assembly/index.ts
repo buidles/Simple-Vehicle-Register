@@ -1,5 +1,3 @@
-// TODO: add logging
-
 import { storage, context, PersistentMap, logging } from "near-sdk-as";
 import { Registration, Registrant } from "./models";
 
