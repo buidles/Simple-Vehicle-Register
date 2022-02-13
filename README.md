@@ -6,7 +6,7 @@ Uses https://github.com/Learn-NEAR/starter--near-sdk-as as a template.
 
 - A user first registers with some personal details.
 - Once registered they can register vehicles - either cars, boats, or motorcyles.
-- Registered vehicles can be updated, deleted, or transferred to another account
+- Registered vehicles can be updated, deleted, or transferred to another registrant.
 
 ## Project Setup
 
@@ -21,7 +21,7 @@ Ensure [NEAR CLI](https://github.com/near/near-cli) and [yarn](https://github.co
 
 To run unit tests: `yarn test`
 
-## Usage
+## Environment setup
 
 1. Set NEAR environment: `export NEAR_ENV=testnet`
 2. Set contract owner: `export OWNER=<your-account>.testnet`
@@ -29,12 +29,35 @@ To run unit tests: `yarn test`
 
 ## Contract API
 
-todo
+| Function                        | Method | Description                                       |
+| :------------------------------ | :----- | :------------------------------------------------ |
+| `createRegistrant()`            | call   | Create a registrant                               |
+| `updateRegistrant()`            | call   | Update a registrant                               |
+| `deleteRegistrant()`            | call   | Delete a registrant                               |
+| `createRegistration()`          | call   | Create a registration                             |
+| `updateRegistration()`          | call   | Update a registration                             |
+| `deleteRegistration()`          | call   | Delete a registration                             |
+| `transferRegistration()`        | call   | Transfer a registration to a different registrant |
+| `getRegistrantData()`           | view   | Get a registrant's data                           |
+| `getRegistrantsRegistrations()` | view   | Get a registratant's registrations                |
 
-## Examples
+### `createRegistrant()`
 
-#### To register a user:
+**Parameters:**
 
-Call `createRegistration()`
+| Parameter     | Type   | Required |
+| :------------ | :----- | :------- |
+| `firstName`   | string | yes      |
+| `lastName`    | string | yes      |
+| `houseNumber` | string | yes      |
+| `street`      | string | yes      |
+| `city`        | string | yes      |
+| `postalCode`  | string | yes      |
+| `telNumber`   | string | yes      |
+| `email`       | string | yes      |
 
-`near call $CONTRACT createRegistration '{"licenceNumber": "licence-no-2", "type": "car", "make": "Tesla", "model": "x2", "color":"green"}' --accountId jptest1.testnet`
+**Example:**
+
+```
+near call $CONTRACT createRegistration '{"licenceNumber": "test-licence-no-1", "type": "car", "make": "Tesla", "model": "Model X", "color": "black"}' --accountId <your-account>.testnet`
+```
