@@ -396,18 +396,65 @@ describe("Contract", () => {
       );
     });
 
-    it("should transfer a regisration from one registrant to another", () => {});
-  });
+    it("should transfer a registration from one registrant to another", () => {
+      let testRegistrant1 = contract.getRegistrantData("test_user_1");
+      let testRegistrant2 = contract.getRegistrantData("test_user_2");
+      let testRegistration1 = contract.registrations.get("123-xyz");
+      let testRegistration2 = contract.registrations.get("456-xyz");
 
-  // // VIEW method tests
-  // it("says hello", () => {
-  //   expect(contract.helloWorld()).toStrictEqual("hello world")
-  // })
-  // it("reads data", () => {
-  //   expect(contract.read("some key")).toStrictEqual("🚫 Key [ some key ] not found in storage. ( storage [ 0 bytes ] )")
-  // })
-  // // CHANGE method tests
-  // it("saves data to contract storage", () => {
-  //   expect(contract.write("some-key", "some value")).toStrictEqual("✅ Data saved. ( storage [ 18 bytes ] )")
-  // })
+      expect(testRegistrant1!.registrations).toHaveLength(
+        1,
+        'Registrant "test_user_1" should have one registration'
+      );
+
+      expect(testRegistrant2!.registrations).toHaveLength(
+        1,
+        'Registrant "test_user_2" should have one registration'
+      );
+
+      expect(testRegistrant1!.registrations[0]).toBe(
+        "123-xyz",
+        'Registration "123-xyz" should exist for "test_user_1"'
+      );
+
+      expect(testRegistrant2!.registrations[0]).toBe(
+        "456-xyz",
+        'Registration "456-xyz" should exist for "test_user_2"'
+      );
+
+      expect(testRegistration1!.registrant).toBe("test_user_1");
+      expect(testRegistration2!.registrant).toBe("test_user_2");
+
+      VMContext.setSigner_account_id("test_user_1");
+      contract.transferRegistration("123-xyz", "test_user_2");
+
+      testRegistrant1 = contract.getRegistrantData("test_user_1");
+      testRegistrant2 = contract.getRegistrantData("test_user_2");
+      testRegistration1 = contract.registrations.get("123-xyz");
+      testRegistration2 = contract.registrations.get("456-xyz");
+
+      expect(testRegistrant1!.registrations).toHaveLength(
+        0,
+        'Registrant "test_user_1" should not have any registrations'
+      );
+
+      expect(testRegistrant2!.registrations).toHaveLength(
+        2,
+        'Registrant "test_user_2" should have two registrations'
+      );
+
+      expect(testRegistrant2!.registrations[0]).toBe(
+        "456-xyz",
+        'Registration "456-xyz" should exist for "test_user_2"'
+      );
+
+      expect(testRegistrant2!.registrations[1]).toBe(
+        "123-xyz",
+        'Registration "123-xyz" should exist for "test_user_2"'
+      );
+
+      expect(testRegistration1!.registrant).toBe("test_user_2");
+      expect(testRegistration2!.registrant).toBe("test_user_2");
+    });
+  });
 });
