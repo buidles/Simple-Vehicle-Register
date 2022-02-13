@@ -128,6 +128,7 @@ export function deleteRegistrant(): void {
  * Only the sender can create their own registration items
  * Asserts a registration with the same licence number does not already exist
  * Asserts a registrant with the sender account ID exists
+ * Asserts the type can only be "car", "boat", or "motorcyle"
  * Also adds entry to the registrant's registrations
  */
 export function createRegistration(
@@ -145,6 +146,11 @@ export function createRegistration(
   assert(
     storage.hasKey("registrants::" + context.sender),
     "Registrant does not exist"
+  );
+
+  assert(
+    type == "car" || type == "boat" || type == "motorcyle",
+    `Type can only be "car", "boat", or "motorcyle"`
   );
 
   const blockIndex = context.blockIndex;
