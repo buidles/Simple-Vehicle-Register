@@ -8,8 +8,11 @@ export const registrations = new PersistentMap<string, Registration>(
 );
 export const registrants = new PersistentMap<string, Registrant>("registrants");
 
-// Create a registrant
-// Must be created before creating registration
+/**
+ * Create a registrant
+ *
+ * Asserts a registrant with the sender account ID does not already exist
+ */
 export function createRegistrant(
   firstName: string,
   lastName: string,
@@ -28,7 +31,6 @@ export function createRegistrant(
   );
 
   const registrations = new Array<string>();
-
   const registrant = new Registrant(
     accountId,
     firstName,
@@ -45,7 +47,12 @@ export function createRegistrant(
   registrants.set(accountId, registrant);
 }
 
-// Only registrant can update their own data
+/**
+ * Update a registrant
+ *
+ * Only the sender can update their own registrant item
+ * Asserts a registrant with the sender account ID exists
+ */
 export function updateRegistrant(
   firstName: string,
   lastName: string,
@@ -84,8 +91,13 @@ export function updateRegistrant(
   registrants.set(accountId, updatedRegistrant);
 }
 
-// Only registrant can delete themselves
-// Will also delete registrant's registrations
+/**
+ * Delete a registrant
+ *
+ * Only the sender can delete their own registrant item
+ * Asserts a registrant with the sender account ID exists
+ * Also deletes registrations belonging to the registrant
+ */
 export function deleteRegistrant(): void {
   assert(
     storage.hasKey("registrants::" + context.sender),
@@ -110,7 +122,14 @@ export function deleteRegistrant(): void {
   }
 }
 
-// Create a registration
+/**
+ * Create a registration
+ *
+ * Only the sender can create their own registration items
+ * Asserts a registration with the same licence number does not already exist
+ * Asserts a registrant with the sender account ID exists
+ * Also adds entry to the registrant's registrations
+ */
 export function createRegistration(
   licenceNumber: string,
   type: string,
@@ -129,8 +148,6 @@ export function createRegistration(
   );
 
   const blockIndex = context.blockIndex;
-
-  // Create registration item
   const registration = new Registration(
     type,
     make,
@@ -142,7 +159,6 @@ export function createRegistration(
 
   registrations.set(licenceNumber, registration);
 
-  // Add to registrant's registrations
   const registrant = registrants.get(context.sender);
   const registrantsUpdatedRegistrations = new Array<string>();
   const registrantsCurrentRegistrations = registrant!.registrations;
@@ -152,12 +168,17 @@ export function createRegistration(
   }
 
   registrantsUpdatedRegistrations.push(licenceNumber);
-
   registrant!.registrations = registrantsUpdatedRegistrations;
   registrants.set(context.sender, registrant!);
 }
 
-// Only the registration's registrant can update the registration
+/**
+ * Update a registration
+ *
+ * Only the sender can update their own registration items
+ * Asserts a registration with the same licence number exists
+ * Asserts the registrant and the registration's registrant have the same account ID
+ */
 export function updateRegistration(
   licenceNumber: string,
   type: string,
@@ -189,6 +210,15 @@ export function updateRegistration(
   registrations.set(licenceNumber, updatedRegistration);
 }
 
+/**
+ * Delete a registration
+ *
+ * Only the sender can delete their own registration items
+ * Asserts a registration with the same licence number exists
+ * Asserts the registration's registrant exists
+ * Asserts the registrant and the registration's registrant have the same account ID
+ * Also updates the registrant
+ */
 export function deleteRegistration(licenceNumber: string): void {
   assert(
     storage.hasKey("registrations::" + licenceNumber),
@@ -235,7 +265,11 @@ export function deleteRegistration(licenceNumber: string): void {
   registrants.set(registrant!.accountId, updatedRegistrant);
 }
 
-// Get a registrant's data
+/**
+ * Get a registrant's data
+ *
+ * Asserts the registrant exists
+ */
 export function getRegistrantData(accountId: string): Registrant | null {
   assert(
     storage.hasKey("registrants::" + accountId),
@@ -245,7 +279,11 @@ export function getRegistrantData(accountId: string): Registrant | null {
   return registrants.get(accountId);
 }
 
-// Get registration licence numbers registered to a registrant
+/**
+ * Get a registratant's registrations
+ *
+ * Asserts the registrant exists
+ */
 export function getRegistrantsRegistrations(accountId: string): Array<string> {
   assert(
     storage.hasKey("registrants::" + accountId),
@@ -266,9 +304,14 @@ export function getRegistrantsRegistrations(accountId: string): Array<string> {
   return result;
 }
 
-// Transfer registration to a different registrant
-// - Registrant must have been created beforehand
-// - Registrant can only transfer their own registrations
+/**
+ * Transfer a registration to a different registrant
+ *
+ * Asserts both the from and to registrants exist
+ * Asserts the registration exists
+ * Asserts the current registration's registrant is the sender
+ * Also updates both the from and to registrants' registrations
+ */
 export function transferRegistration(
   licenceNumber: string,
   toAccountId: string
@@ -289,11 +332,9 @@ export function transferRegistration(
   );
 
   const registration = registrations.get(licenceNumber);
-
   const fromRegistrant = registrants.get(registration!.registrant);
   const toRegistrant = registrants.get(toAccountId);
 
-  // Update registration with new registrant
   assert(
     registration!.registrant == context.sender,
     "Only the current registrant can tranfer registration."
@@ -302,7 +343,6 @@ export function transferRegistration(
   registration!.registrant = toAccountId;
   registrations.set(licenceNumber, registration!);
 
-  // Remove licence no. from current registrant's registrations
   const fromRegistrantsAmendedRegistrations = new Array<string>();
 
   for (let i = 0; i < fromRegistrant!.registrations.length; ++i) {
@@ -316,7 +356,6 @@ export function transferRegistration(
   fromRegistrant!.registrations = fromRegistrantsAmendedRegistrations;
   registrants.set(fromRegistrant!.accountId, fromRegistrant!);
 
-  // Add licence no. to new registrant's registrations
   const toRegistrantsAmendedRegistrations = new Array<string>();
 
   for (let i = 0; i < toRegistrant!.registrations.length; ++i) {
@@ -324,7 +363,6 @@ export function transferRegistration(
   }
 
   toRegistrantsAmendedRegistrations.push(licenceNumber);
-
   toRegistrant!.registrations = toRegistrantsAmendedRegistrations;
   registrants.set(toRegistrant!.accountId, toRegistrant!);
 }
