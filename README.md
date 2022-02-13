@@ -27,6 +27,12 @@ To run unit tests: `yarn test`
 2. Set contract owner: `export OWNER=<your-account>.testnet`
 3. Set contract: `export CONTRACT=<dev-account-id>`
 
+## Contract API
+
+todo
+
+## Examples
+
 #### To register a user:
 
 Call `createRegistration()`
