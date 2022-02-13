@@ -1,5 +1,3 @@
-import { PersistentVector } from "near-sdk-as";
-
 /**
  * @class Registration
  * @property type - type of vehicle
@@ -23,6 +21,7 @@ export class Registration {
 
 /**
  * @class Registrant
+ * @property accountId - account ID of registrant
  * @property firstName - first name of registrant
  * @property lastName - last name of registrant
  * @property houseNumber - house number of registrant
@@ -32,7 +31,6 @@ export class Registration {
  * @property telNumber - telephone number of registrant
  * @property email - email of registrant
  * @property registrations - registrations of registrant
-
  */
 @nearBindgen
 export class Registrant {

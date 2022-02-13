@@ -1,21 +1,11 @@
-import {
-  VMContext,
-  u128,
-  context,
-  storage,
-  PersistentMap,
-  logging,
-} from "near-sdk-as";
+import { VMContext } from "near-sdk-as";
 import * as contract from "../assembly";
-import { Registration, Registrant } from "../assembly/models";
 
 describe("Contract", () => {
   describe("createRegistrant()", () => {
     beforeEach(() => {
       VMContext.setSigner_account_id("test_user");
-    });
 
-    it("should create a new registrant with the correct values", () => {
       contract.createRegistrant(
         "John",
         "Jones",
@@ -26,7 +16,9 @@ describe("Contract", () => {
         "123456789",
         "test@test.com"
       );
+    });
 
+    it("should create a new registrant with the correct values", () => {
       const createdRegistrant = contract.registrants.get("test_user");
 
       expect(createdRegistrant!.firstName).toBe(
