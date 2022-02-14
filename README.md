@@ -8,6 +8,14 @@ Uses https://github.com/Learn-NEAR/starter--near-sdk-as as a template.
 - Once registered they can register vehicles - either cars, boats, or motorcyles.
 - Registered vehicles can be updated, deleted, or transferred to another registrant.
 
+**Notes**
+
+- The blockchain may not be the best option for this project due to the private data , but it’s possible NEAR's private sharding could be used
+
+**Possible Improvements**
+
+- sdasdsa asdsad
+
 ## Project Setup
 
 Ensure [NEAR CLI](https://github.com/near/near-cli) and [yarn](https://github.com/yarnpkg/berry) are installed.

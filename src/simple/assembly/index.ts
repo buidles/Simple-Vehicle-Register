@@ -9,7 +9,8 @@ export const registrants = new PersistentMap<string, Registrant>("registrants");
 /**
  * Create a registrant
  *
- * Asserts a registrant with the sender account ID does not already exist
+ * Asserts:
+ * - a registrant with the sender account ID does not already exist
  */
 export function createRegistrant(
   firstName: string,
@@ -49,7 +50,9 @@ export function createRegistrant(
  * Update a registrant
  *
  * Only the sender can update their own registrant item
- * Asserts a registrant with the sender account ID exists
+ *
+ * Asserts:
+ * - a registrant with the sender account ID exists
  */
 export function updateRegistrant(
   firstName: string,
@@ -93,8 +96,10 @@ export function updateRegistrant(
  * Delete a registrant
  *
  * Only the sender can delete their own registrant item
- * Asserts a registrant with the sender account ID exists
- * Also deletes registrations belonging to the registrant
+ * Deletes registrations belonging to the registrant
+ *
+ * Asserts:
+ * - a registrant with the sender account ID exists
  */
 export function deleteRegistrant(): void {
   assert(
@@ -124,10 +129,12 @@ export function deleteRegistrant(): void {
  * Create a registration
  *
  * Only the sender can create their own registration items
- * Asserts a registration with the same licence number does not already exist
- * Asserts a registrant with the sender account ID exists
- * Asserts the type can only be "car", "boat", or "motorcyle"
- * Also adds entry to the registrant's registrations
+ * Adds entry to the registrant's registrations
+ *
+ * Asserts:
+ * - a registration with the same licence number does not already exist
+ * - a registrant with the sender account ID exists
+ * - the type can only be "car", "boat", or "motorcyle"
  */
 export function createRegistration(
   licenceNumber: string,
@@ -180,8 +187,10 @@ export function createRegistration(
  * Update a registration
  *
  * Only the sender can update their own registration items
- * Asserts a registration with the same licence number exists
- * Asserts the registrant and the registration's registrant have the same account ID
+ *
+ * Asserts:
+ * - a registration with the same licence number exists
+ * - the registrant and the registration's registrant have the same account ID
  */
 export function updateRegistration(
   licenceNumber: string,
@@ -218,10 +227,12 @@ export function updateRegistration(
  * Delete a registration
  *
  * Only the sender can delete their own registration items
- * Asserts a registration with the same licence number exists
- * Asserts the registration's registrant exists
- * Asserts the registrant and the registration's registrant have the same account ID
- * Also updates the registrant
+ * Updates the registration's registrant
+ *
+ * Asserts:
+ * - a registration with the same licence number exists
+ * - the registration's registrant exists
+ * - the registrant and the registration's registrant have the same account ID
  */
 export function deleteRegistration(licenceNumber: string): void {
   assert(
@@ -272,7 +283,8 @@ export function deleteRegistration(licenceNumber: string): void {
 /**
  * Get a registrant's data
  *
- * Asserts the registrant exists
+ * Asserts:
+ * - the registrant exists
  */
 export function getRegistrantData(accountId: string): Registrant | null {
   assert(
@@ -286,7 +298,8 @@ export function getRegistrantData(accountId: string): Registrant | null {
 /**
  * Get a registratant's registrations
  *
- * Asserts the registrant exists
+ * Asserts:
+ * - the registrant exists
  */
 export function getRegistrantsRegistrations(accountId: string): Array<string> {
   assert(
@@ -310,11 +323,12 @@ export function getRegistrantsRegistrations(accountId: string): Array<string> {
 
 /**
  * Transfer a registration to a different registrant
+ * Updates both the from and to registrants' registrations
  *
- * Asserts both the from and to registrants exist
- * Asserts the registration exists
- * Asserts the current registration's registrant is the sender
- * Also updates both the from and to registrants' registrations
+ * Asserts:
+ * - both the from and to registrants exist
+ * - the registration exists
+ * - the current registration's registrant is the sender
  */
 export function transferRegistration(
   licenceNumber: string,
