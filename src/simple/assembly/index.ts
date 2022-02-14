@@ -281,47 +281,6 @@ export function deleteRegistration(licenceNumber: string): void {
 }
 
 /**
- * Get a registrant's data
- *
- * Asserts:
- * - the registrant exists
- */
-export function getRegistrantData(accountId: string): Registrant | null {
-  assert(
-    storage.hasKey("registrants::" + accountId),
-    "Registrant " + accountId + " does not exist."
-  );
-
-  return registrants.get(accountId);
-}
-
-/**
- * Get a registratant's registrations
- *
- * Asserts:
- * - the registrant exists
- */
-export function getRegistrantsRegistrations(accountId: string): Array<string> {
-  assert(
-    storage.hasKey("registrants::" + accountId),
-    "Registrant " + accountId + "  does not exist."
-  );
-
-  const registrant = registrants.get(accountId);
-  const result = new Array<string>();
-
-  if (!registrant) {
-    return [];
-  }
-
-  for (let i = 0; i < registrant.registrations.length; ++i) {
-    result.push(registrant.registrations[i]);
-  }
-
-  return result;
-}
-
-/**
  * Transfer a registration to a different registrant
  * Updates both the from and to registrants' registrations
  *
@@ -383,4 +342,45 @@ export function transferRegistration(
   toRegistrantsAmendedRegistrations.push(licenceNumber);
   toRegistrant!.registrations = toRegistrantsAmendedRegistrations;
   registrants.set(toRegistrant!.accountId, toRegistrant!);
+}
+
+/**
+ * Get a registrant's data
+ *
+ * Asserts:
+ * - the registrant exists
+ */
+export function getRegistrantData(accountId: string): Registrant | null {
+  assert(
+    storage.hasKey("registrants::" + accountId),
+    "Registrant " + accountId + " does not exist."
+  );
+
+  return registrants.get(accountId);
+}
+
+/**
+ * Get a registratant's registrations
+ *
+ * Asserts:
+ * - the registrant exists
+ */
+export function getRegistrantsRegistrations(accountId: string): Array<string> {
+  assert(
+    storage.hasKey("registrants::" + accountId),
+    "Registrant " + accountId + "  does not exist."
+  );
+
+  const registrant = registrants.get(accountId);
+  const result = new Array<string>();
+
+  if (!registrant) {
+    return [];
+  }
+
+  for (let i = 0; i < registrant.registrations.length; ++i) {
+    result.push(registrant.registrations[i]);
+  }
+
+  return result;
 }

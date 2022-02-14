@@ -67,5 +67,131 @@ To run unit tests: `yarn test`
 **Example:**
 
 ```
-near call $CONTRACT createRegistration '{"licenceNumber": "test-licence-no-1", "type": "car", "make": "Tesla", "model": "Model X", "color": "black"}' --accountId <your-account>.testnet`
+near call $CONTRACT createRegistrant '{"firstName": "John", "lastName": "Smith", "houseNumber": "123", "street": "High street", "city":"Brighton", "postalCode": "AB1 2CD", "telNumber": "0123456789", "email": "jsmith@test.com"}' --accountId <your-account>.testnet
+```
+
+### `updateRegistrant()`
+
+**Parameters:**
+
+| Parameter     | Type   | Required |
+| :------------ | :----- | :------- |
+| `firstName`   | string | yes      |
+| `lastName`    | string | yes      |
+| `houseNumber` | string | yes      |
+| `street`      | string | yes      |
+| `city`        | string | yes      |
+| `postalCode`  | string | yes      |
+| `telNumber`   | string | yes      |
+| `email`       | string | yes      |
+
+**Example:**
+
+```
+near call $CONTRACT updateRegistrant '{"firstName": "John", "lastName": "Smith", "houseNumber": "345", "street": "Low street", "city":"London", "postalCode": "WC1", "telNumber": "0123456789", "email": "jsmith@test.com"}' --accountId <your-account>.testnet
+```
+
+### `deleteRegistrant()`
+
+**Parameters:**
+
+None
+
+**Example:**
+
+```
+near call $CONTRACT deleteRegistrant --accountId <your-account>.testnet
+```
+
+### `createRegistration()`
+
+**Parameters:**
+
+| Parameter       | Type   | Required |
+| :-------------- | :----- | :------- |
+| `licenceNumber` | string | yes      |
+| `type`          | string | yes      |
+| `make`          | string | yes      |
+| `model`         | string | yes      |
+| `color`         | string | yes      |
+
+**Example:**
+
+```
+near call $CONTRACT createRegistration '{"licenceNumber": "test-licence-no-1", "type": "car", "make": "Tesla", "model": "Model X", "color":"black"}' --accountId <your-account>.testnet
+```
+
+### `updateRegistration()`
+
+**Parameters:**
+
+| Parameter       | Type   | Required |
+| :-------------- | :----- | :------- |
+| `licenceNumber` | string | yes      |
+| `type`          | string | yes      |
+| `make`          | string | yes      |
+| `model`         | string | yes      |
+| `color`         | string | yes      |
+
+**Example:**
+
+```
+near call $CONTRACT updateRegistration '{"licenceNumber": "test-licence-no-1", "type": "car", "make": "Tesla", "model": "Model X", "color":"black"}' --accountId <your-account>.testnet
+```
+
+### `deleteRegistration()`
+
+**Parameters:**
+
+| Parameter       | Type   | Required |
+| :-------------- | :----- | :------- |
+| `licenceNumber` | string | yes      |
+
+**Example:**
+
+```
+near call $CONTRACT deleteRegistration '{"licenceNumber": "test-licence-no-1"}' --accountId <your-account>.testnet
+```
+
+### `transferRegistration()`
+
+**Parameters:**
+
+| Parameter       | Type   | Required |
+| :-------------- | :----- | :------- |
+| `licenceNumber` | string | yes      |
+| `toAccountId`   | string | yes      |
+
+**Example:**
+
+```
+near call $CONTRACT transferRegistration '{"licenceNumber": "test-licence-no-1", "toAccountId": "<account-id>.testnet"}' --accountId <your-account>.testnet
+```
+
+### `getRegistrantData()`
+
+**Parameters:**
+
+| Parameter   | Type   | Required |
+| :---------- | :----- | :------- |
+| `accountId` | string | yes      |
+
+**Example:**
+
+```
+near view $CONTRACT getRegistrantData '{"accountId": "<account-id>.testnet"}'
+```
+
+### `getRegistrantsRegistrations()`
+
+**Parameters:**
+
+| Parameter   | Type   | Required |
+| :---------- | :----- | :------- |
+| `accountId` | string | yes      |
+
+**Example:**
+
+```
+near view $CONTRACT getRegistrantsRegistrations '{"accountId": "<account-id>.testnet"}'
 ```
