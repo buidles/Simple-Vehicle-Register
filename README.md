@@ -10,11 +10,14 @@ Uses https://github.com/Learn-NEAR/starter--near-sdk-as as a template.
 
 **Notes**
 
-- The blockchain may not be the best option for this project due to the private data , but it’s possible NEAR's private sharding could be used
+This is just a basic project used as an introduction to NEAR development. A public blockchain would not be suitable for this project of this type due to the private data being stored. If data privacy for a project is a requirement for a project then [NEAR's private sharding](https://near.org/blog/near-launches-private-shard-for-enterprise/) may be suitable.
 
 **Possible Improvements**
 
-- sdasdsa asdsad
+- Full validation of all function parameters.
+- Admin account/s that can perform any action should it be needed.
+- Charge users for transactions.
+- NFTs could be issued for each registration.
 
 ## Project Setup
 
@@ -37,17 +40,17 @@ To run unit tests: `yarn test`
 
 ## Contract API
 
-| Function                        | Method | Description                                       |
-| :------------------------------ | :----- | :------------------------------------------------ |
-| `createRegistrant()`            | call   | Create a registrant                               |
-| `updateRegistrant()`            | call   | Update a registrant                               |
-| `deleteRegistrant()`            | call   | Delete a registrant                               |
-| `createRegistration()`          | call   | Create a registration                             |
-| `updateRegistration()`          | call   | Update a registration                             |
-| `deleteRegistration()`          | call   | Delete a registration                             |
-| `transferRegistration()`        | call   | Transfer a registration to a different registrant |
-| `getRegistrantData()`           | view   | Get a registrant's data                           |
-| `getRegistrantsRegistrations()` | view   | Get a registratant's registrations                |
+| Function                        | Method | Description                                       | Notes                                                          |
+| :------------------------------ | :----- | :------------------------------------------------ | :------------------------------------------------------------- |
+| `createRegistrant()`            | call   | Create a registrant                               | Calling account can only create a registrant item for itself   |
+| `updateRegistrant()`            | call   | Update a registrant                               | Calling account can only update its own registrant item        |
+| `deleteRegistrant()`            | call   | Delete a registrant                               | Calling account can only delete its own registrant item        |
+| `createRegistration()`          | call   | Create a registration                             | Calling account can only create a registration item for itself |
+| `updateRegistration()`          | call   | Update a registration                             | Calling account can only update its own registration items     |
+| `deleteRegistration()`          | call   | Delete a registration                             | Calling account can only delete its own registration items     |
+| `transferRegistration()`        | call   | Transfer a registration to a different registrant | Calling account can only transfer its own registration items   |
+| `getRegistrantData()`           | view   | Get a registrant's data                           | Can be viewed by anyone                                        |
+| `getRegistrantsRegistrations()` | view   | Get a registratant's registrations                | Can be viewed by anyone                                        |
 
 ### `createRegistrant()`
 
