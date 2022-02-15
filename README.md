@@ -4,6 +4,8 @@ Uses https://github.com/Learn-NEAR/starter--near-sdk-as as a template.
 
 ## About
 
+A simple vehicle registry that allows users to register and transfer vehicles to other users. Users are able to view a registrant's (registered user) or registration's (registered vehicle) details.
+
 - A user first registers with some personal details.
 - Once registered they can register vehicles - either cars, boats, or motorcyles.
 - Registered vehicles can be updated, deleted, or transferred to another registrant.
