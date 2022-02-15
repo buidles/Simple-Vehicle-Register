@@ -14,6 +14,7 @@ This is just a basic project used as an introduction to NEAR development. A publ
 
 **Possible Improvements**
 
+- Estimate gas costs and refactor if needed.
 - Full validation of all function parameters.
 - Admin account/s that can perform any action should it be needed.
 - Charge users for transactions.
