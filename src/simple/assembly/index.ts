@@ -47,6 +47,47 @@ export function createRegistrant(
 }
 
 /**
+ * Get a registrant's data
+ *
+ * Asserts:
+ * - the registrant exists
+ */
+export function getRegistrant(accountId: string): Registrant | null {
+  assert(
+    storage.hasKey("registrants::" + accountId),
+    "Registrant " + accountId + " does not exist."
+  );
+
+  return registrants.get(accountId);
+}
+
+/**
+ * Get a registratant's registrations
+ *
+ * Asserts:
+ * - the registrant exists
+ */
+export function getRegistrantsRegistrations(accountId: string): Array<string> {
+  assert(
+    storage.hasKey("registrants::" + accountId),
+    "Registrant " + accountId + "  does not exist."
+  );
+
+  const registrant = registrants.get(accountId);
+  const result = new Array<string>();
+
+  if (!registrant) {
+    return [];
+  }
+
+  for (let i = 0; i < registrant.registrations.length; ++i) {
+    result.push(registrant.registrations[i]);
+  }
+
+  return result;
+}
+
+/**
  * Update a registrant
  *
  * Only the sender can update their own registrant item
@@ -181,6 +222,21 @@ export function createRegistration(
   registrantsUpdatedRegistrations.push(licenceNumber);
   registrant!.registrations = registrantsUpdatedRegistrations;
   registrants.set(context.sender, registrant!);
+}
+
+/**
+ * Get a registration's data
+ *
+ * Asserts:
+ * - the registration exists
+ */
+export function getRegistration(licenceNumber: string): Registration | null {
+  assert(
+    storage.hasKey("registrations::" + licenceNumber),
+    "Registration " + licenceNumber + " does not exist."
+  );
+
+  return registrations.get(licenceNumber);
 }
 
 /**
@@ -342,62 +398,4 @@ export function transferRegistration(
   toRegistrantsAmendedRegistrations.push(licenceNumber);
   toRegistrant!.registrations = toRegistrantsAmendedRegistrations;
   registrants.set(toRegistrant!.accountId, toRegistrant!);
-}
-
-/**
- * Get a registrant's data
- *
- * Asserts:
- * - the registrant exists
- */
-export function getRegistrantData(accountId: string): Registrant | null {
-  assert(
-    storage.hasKey("registrants::" + accountId),
-    "Registrant " + accountId + " does not exist."
-  );
-
-  return registrants.get(accountId);
-}
-
-/**
- * Get a registration's data
- *
- * Asserts:
- * - the registration exists
- */
-export function getRegistrationData(
-  licenceNumber: string
-): Registration | null {
-  assert(
-    storage.hasKey("registrations::" + licenceNumber),
-    "Registration " + licenceNumber + " does not exist."
-  );
-
-  return registrations.get(licenceNumber);
-}
-
-/**
- * Get a registratant's registrations
- *
- * Asserts:
- * - the registrant exists
- */
-export function getRegistrantsRegistrations(accountId: string): Array<string> {
-  assert(
-    storage.hasKey("registrants::" + accountId),
-    "Registrant " + accountId + "  does not exist."
-  );
-
-  const registrant = registrants.get(accountId);
-  const result = new Array<string>();
-
-  if (!registrant) {
-    return [];
-  }
-
-  for (let i = 0; i < registrant.registrations.length; ++i) {
-    result.push(registrant.registrations[i]);
-  }
-
-  return result;
 }

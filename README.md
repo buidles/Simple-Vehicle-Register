@@ -46,15 +46,15 @@ To run unit tests: `yarn test`
 | Function                        | Method | Description                                       | Notes                                                          |
 | :------------------------------ | :----- | :------------------------------------------------ | :------------------------------------------------------------- |
 | `createRegistrant()`            | call   | Create a registrant                               | Calling account can only create a registrant item for itself   |
+| `getRegistrant()`               | view   | Get a registrant's data                           | Can be viewed by anyone                                        |
+| `getRegistrantsRegistrations()` | view   | Get a registrant's registrations                  | Can be viewed by anyone                                        |
 | `updateRegistrant()`            | call   | Update a registrant                               | Calling account can only update its own registrant item        |
 | `deleteRegistrant()`            | call   | Delete a registrant                               | Calling account can only delete its own registrant item        |
 | `createRegistration()`          | call   | Create a registration                             | Calling account can only create a registration item for itself |
+| `getRegistration()`             | view   | Get a registration's data                         | Can be viewed by anyone                                        |
 | `updateRegistration()`          | call   | Update a registration                             | Calling account can only update its own registration items     |
 | `deleteRegistration()`          | call   | Delete a registration                             | Calling account can only delete its own registration items     |
 | `transferRegistration()`        | call   | Transfer a registration to a different registrant | Calling account can only transfer its own registration items   |
-| `getRegistrantData()`           | view   | Get a registrant's data                           | Can be viewed by anyone                                        |
-| `getRegistrationData()`         | view   | Get a registration's data                         | Can be viewed by anyone                                        |
-| `getRegistrantsRegistrations()` | view   | Get a registratant's registrations                | Can be viewed by anyone                                        |
 
 ### `createRegistrant()`
 
@@ -75,6 +75,34 @@ To run unit tests: `yarn test`
 
 ```
 near call $CONTRACT createRegistrant '{"firstName": "John", "lastName": "Smith", "houseNumber": "123", "street": "High street", "city":"Brighton", "postalCode": "AB1 2CD", "telNumber": "0123456789", "email": "jsmith@test.com"}' --accountId <your-account>.testnet
+```
+
+### `getRegistrant()`
+
+**Parameters:**
+
+| Parameter   | Type   | Required |
+| :---------- | :----- | :------- |
+| `accountId` | string | yes      |
+
+**Example:**
+
+```
+near view $CONTRACT getRegistrant '{"accountId": "<account-id>.testnet"}'
+```
+
+### `getRegistrantsRegistrations()`
+
+**Parameters:**
+
+| Parameter   | Type   | Required |
+| :---------- | :----- | :------- |
+| `accountId` | string | yes      |
+
+**Example:**
+
+```
+near view $CONTRACT getRegistrantsRegistrations '{"accountId": "<account-id>.testnet"}'
 ```
 
 ### `updateRegistrant()`
@@ -128,6 +156,20 @@ near call $CONTRACT deleteRegistrant --accountId <your-account>.testnet
 near call $CONTRACT createRegistration '{"licenceNumber": "test-licence-no-1", "type": "car", "make": "Tesla", "model": "Model X", "color":"black"}' --accountId <your-account>.testnet
 ```
 
+### `getRegistration()`
+
+**Parameters:**
+
+| Parameter       | Type   | Required |
+| :-------------- | :----- | :------- |
+| `licenceNumber` | string | yes      |
+
+**Example:**
+
+```
+near view $CONTRACT getRegistration '{"licenceNumber": "<licence-number>"}'
+```
+
 ### `updateRegistration()`
 
 **Parameters:**
@@ -173,46 +215,4 @@ near call $CONTRACT deleteRegistration '{"licenceNumber": "test-licence-no-1"}' 
 
 ```
 near call $CONTRACT transferRegistration '{"licenceNumber": "test-licence-no-1", "toAccountId": "<account-id>.testnet"}' --accountId <your-account>.testnet
-```
-
-### `getRegistrantData()`
-
-**Parameters:**
-
-| Parameter   | Type   | Required |
-| :---------- | :----- | :------- |
-| `accountId` | string | yes      |
-
-**Example:**
-
-```
-near view $CONTRACT getRegistrantData '{"accountId": "<account-id>.testnet"}'
-```
-
-### `getRegistrationData()`
-
-**Parameters:**
-
-| Parameter       | Type   | Required |
-| :-------------- | :----- | :------- |
-| `licenceNumber` | string | yes      |
-
-**Example:**
-
-```
-near view $CONTRACT getRegistrationData '{"licenceNumber": "<licence-number>"}'
-```
-
-### `getRegistrantsRegistrations()`
-
-**Parameters:**
-
-| Parameter   | Type   | Required |
-| :---------- | :----- | :------- |
-| `accountId` | string | yes      |
-
-**Example:**
-
-```
-near view $CONTRACT getRegistrantsRegistrations '{"accountId": "<account-id>.testnet"}'
 ```

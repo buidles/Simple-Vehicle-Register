@@ -265,7 +265,7 @@ describe("Contract", () => {
     });
   });
 
-  describe("getRegistrantData()", () => {
+  describe("getRegistrant()", () => {
     beforeEach(() => {
       VMContext.setSigner_account_id("test_user");
 
@@ -282,7 +282,7 @@ describe("Contract", () => {
     });
 
     it("should get a registrant's data", () => {
-      const testRegistrant = contract.getRegistrantData("test_user");
+      const testRegistrant = contract.getRegistrant("test_user");
 
       expect(testRegistrant!.firstName).toBe("John", "firstName is incorrect");
       expect(testRegistrant!.lastName).toBe("Jones", "lastName is incorrect");
@@ -305,15 +305,26 @@ describe("Contract", () => {
     });
   });
 
-  describe("getRegistrationData()", () => {
+  describe("getRegistration()", () => {
     beforeEach(() => {
       VMContext.setSigner_account_id("test_user");
+
+      contract.createRegistrant(
+        "John",
+        "Jones",
+        "123",
+        "High Street",
+        "London",
+        "SE1",
+        "123456789",
+        "test@test.com"
+      );
 
       contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
     });
 
     it("should get a registrations's data", () => {
-      const testRegistration = contract.getRegistrationData("123-xyz");
+      const testRegistration = contract.getRegistration("123-xyz");
 
       expect(testRegistration!.type).toBe("car", "type is incorrect");
       expect(testRegistration!.make).toBe("Ford", "make is incorrect");
@@ -355,7 +366,7 @@ describe("Contract", () => {
     });
 
     it("should get a registrant's registratons", () => {
-      const testRegistrant = contract.getRegistrantData("test_user");
+      const testRegistrant = contract.getRegistrant("test_user");
 
       expect(testRegistrant!.registrations[0]).toBe(
         "123-xyz",
@@ -413,8 +424,8 @@ describe("Contract", () => {
     });
 
     it("should transfer a registration from one registrant to another", () => {
-      let testRegistrant1 = contract.getRegistrantData("test_user_1");
-      let testRegistrant2 = contract.getRegistrantData("test_user_2");
+      let testRegistrant1 = contract.getRegistrant("test_user_1");
+      let testRegistrant2 = contract.getRegistrant("test_user_2");
       let testRegistration1 = contract.registrations.get("123-xyz");
       let testRegistration2 = contract.registrations.get("456-xyz");
 
@@ -444,8 +455,8 @@ describe("Contract", () => {
       VMContext.setSigner_account_id("test_user_1");
       contract.transferRegistration("123-xyz", "test_user_2");
 
-      testRegistrant1 = contract.getRegistrantData("test_user_1");
-      testRegistrant2 = contract.getRegistrantData("test_user_2");
+      testRegistrant1 = contract.getRegistrant("test_user_1");
+      testRegistrant2 = contract.getRegistrant("test_user_2");
       testRegistration1 = contract.registrations.get("123-xyz");
       testRegistration2 = contract.registrations.get("456-xyz");
 
