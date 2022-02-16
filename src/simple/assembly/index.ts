@@ -134,7 +134,7 @@ export function deleteRegistrant(): void {
  * Asserts:
  * - a registration with the same licence number does not already exist
  * - a registrant with the sender account ID exists
- * - the type can only be "car", "boat", or "motorcyle"
+ * - the type can only be "car", "boat", or "motorcycle"
  */
 export function createRegistration(
   licenceNumber: string,
@@ -154,8 +154,8 @@ export function createRegistration(
   );
 
   assert(
-    type == "car" || type == "boat" || type == "motorcyle",
-    `Type can only be "car", "boat", or "motorcyle"`
+    type == "car" || type == "boat" || type == "motorcycle",
+    `Type can only be "car", "boat", or "motorcycle"`
   );
 
   const blockIndex = context.blockIndex;
@@ -357,6 +357,23 @@ export function getRegistrantData(accountId: string): Registrant | null {
   );
 
   return registrants.get(accountId);
+}
+
+/**
+ * Get a registration's data
+ *
+ * Asserts:
+ * - the registration exists
+ */
+export function getRegistrationData(
+  licenceNumber: string
+): Registration | null {
+  assert(
+    storage.hasKey("registrations::" + licenceNumber),
+    "Registration " + licenceNumber + " does not exist."
+  );
+
+  return registrations.get(licenceNumber);
 }
 
 /**

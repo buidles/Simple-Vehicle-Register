@@ -53,6 +53,7 @@ To run unit tests: `yarn test`
 | `deleteRegistration()`          | call   | Delete a registration                             | Calling account can only delete its own registration items     |
 | `transferRegistration()`        | call   | Transfer a registration to a different registrant | Calling account can only transfer its own registration items   |
 | `getRegistrantData()`           | view   | Get a registrant's data                           | Can be viewed by anyone                                        |
+| `getRegistrationData()`         | view   | Get a registration's data                         | Can be viewed by anyone                                        |
 | `getRegistrantsRegistrations()` | view   | Get a registratant's registrations                | Can be viewed by anyone                                        |
 
 ### `createRegistrant()`
@@ -186,6 +187,20 @@ near call $CONTRACT transferRegistration '{"licenceNumber": "test-licence-no-1",
 
 ```
 near view $CONTRACT getRegistrantData '{"accountId": "<account-id>.testnet"}'
+```
+
+### `getRegistrationData()`
+
+**Parameters:**
+
+| Parameter       | Type   | Required |
+| :-------------- | :----- | :------- |
+| `licenceNumber` | string | yes      |
+
+**Example:**
+
+```
+near view $CONTRACT getRegistrationData '{"licenceNumber": "<licence-number>"}'
 ```
 
 ### `getRegistrantsRegistrations()`

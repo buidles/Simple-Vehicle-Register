@@ -305,6 +305,30 @@ describe("Contract", () => {
     });
   });
 
+  describe("getRegistrationData()", () => {
+    beforeEach(() => {
+      VMContext.setSigner_account_id("test_user");
+
+      contract.createRegistration("123-xyz", "car", "Ford", "F150", "blue");
+    });
+
+    it("should get a registrations's data", () => {
+      const testRegistration = contract.getRegistrationData("123-xyz");
+
+      expect(testRegistration!.type).toBe("car", "type is incorrect");
+      expect(testRegistration!.make).toBe("Ford", "make is incorrect");
+      expect(testRegistration!.model).toBe("F150", "model is incorrect");
+      expect(testRegistration!.color).toBe("blue", "color is incorrect");
+      expect(testRegistration!.registrant).toBe(
+        "test_user",
+        "registrant is incorrect"
+      );
+      expect(testRegistration!.blockIndex).toBeTruthy(
+        "blockIndex does not exist"
+      );
+    });
+  });
+
   describe("getRegistrantsRegistrations()", () => {
     beforeEach(() => {
       VMContext.setSigner_account_id("test_user");
