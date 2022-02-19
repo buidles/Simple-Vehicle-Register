@@ -38,8 +38,7 @@ To run unit tests: `yarn test`
 ## Environment setup
 
 1. Set NEAR environment: `export NEAR_ENV=testnet`
-2. Set contract owner: `export OWNER=<your-account>.testnet`
-3. Set contract: `export CONTRACT=<dev-account-id>`
+2. Set contract account ID: `export CONTRACT=<dev-account-id>`
 
 ## Contract API
 
